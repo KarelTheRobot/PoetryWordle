@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Poetry Wordle</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="js/script.js"></script>
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="icon" href="/favicon.ico">
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+        var socket = io();
+        socket.on("response", function(res) {
+            console.log("askdjfaslkdfjalskdjfasdf");
+            recolor_words(res);
+        });
+        socket.on("test123", function(msg) {
+            console.log(msg);
+        });
+        </script>
+
+    </head>
+    <body>
+        <div id="outer_div">
+            <div id="inner_div">
+                <!--<button class="word" onclick="test()">hi</button>-->
+            </div>
+        </div>
+        <button id="start" onclick="vomit_words()">
+            click me!
+        </button>
+        <button id="color" onclick="color()">
+            color
+        </button>
+    </body>
+</html>
