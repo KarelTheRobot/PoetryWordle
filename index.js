@@ -20,15 +20,24 @@ io.on('connection', (socket) => {
   console.log('a user connected');
   io.emit("test123", {"a": 3});
   socket.on("request", (msg) => {
-      socket_client.emit("server_req", msg, (res, err) => {
-          if (err) {
-              console.log(err);
-          }
-          io.emit("response", res);
-          console.log(res);
-      });
-      //console.log(msg);
+    socket_client.emit("server_req", msg, (res, err) => {
+      if (err) {
+        console.log(err);
+      }
+      io.emit("response", res);
+      console.log(res);
+    });
+    //console.log(msg);
   });
+  socket.on("use_all_request", (msg) => {
+    socket_client.emit("use_all_server_req", msg, (res, err) => {
+      if (err) {
+        console.log(err);
+      }
+      io.emit("use_all_response", res);
+      console.log(res);
+    });
+  })
 });
 
 server_.listen(3000, () => {

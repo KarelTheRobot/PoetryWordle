@@ -6,9 +6,10 @@ var words = [];
 var green = "45ADBB";
 var red = "FFAB67";
 var gray = "FFFFFF";
+var poem_number = 0;
 
 function vomit_words() {
-    let lines = poem.split("\n");
+    let lines = poems[poem_number].split("\n");
     let num_lines = lines.length;
     //var words = [];
 
@@ -25,6 +26,8 @@ function vomit_words() {
         }
         words.push(insertable_line);
     }
+
+    console.log("words", words);
 
     let button_div = document.getElementById("inner_div");
 
@@ -82,8 +85,11 @@ function recalc_offsets() {
 
             btn.style.gridColumn = String(current_offset) + " / span " + String(words[i][j][1]);
             btn.style.gridRow = String(i + 1) + " / span 1";
-            btn.style["background-color"] = "#" + getColorBetween(red, gray, green, words[i][j][4]);
-
+            if (words[i][j][4] == "") {
+                btn.style["background-color"] = "#" + getColorBetween(red, gray, green, 0);
+            } else {
+                btn.style["background-color"] = "#" + getColorBetween(red, gray, green, words[i][j][4]);
+            }
             //console.log(words[i][j] + ", " + words[i][j][1]);
             current_offset += words[i][j][1];
         }
@@ -91,12 +97,36 @@ function recalc_offsets() {
 }
 
 function recolor_words(res) {
+    scale_colors = document.getElementById("scale_values").checked;
+    if (scale_colors) {
+        res_values = Object.values(res);
+        max_val = Math.max(...res_values);
+        min_val = Math.min(...res_values);
+
+        function scale (num, in_min, in_max, out_min, out_max) {
+            if (num == "") {
+                return "";
+            }
+
+            return (num - in_min) * (out_max - out_min) / (in_max - in_min + 0.0001) + out_min;
+        }
+        temp_res = {}
+        for (const [key, value] of Object.entries(res)) {
+            temp_res[key] = scale(value, min_val, max_val, -1, 1);
+        }
+        res = temp_res;
+    }
+
     console.log("here");
     counter = 0;
     for (i = 0; i < words.length; i++) {
         for (j = 0; j < words[i].length; j++) {
             //all_words.push(clean(words[i][j][0]));
-            words[i][j][4] = parseFloat(res[counter]);
+            if (res[counter] == "") {
+                words[i][j][4] = "";
+            } else {
+                words[i][j][4] = parseFloat(res[counter]);
+            }
             console.log("setting " + words[i][j] + " to " + res[counter]);
             counter++;
         }
@@ -104,24 +134,59 @@ function recolor_words(res) {
     recalc_offsets();
 }
 
+function correct_sequence(p) {
+    temp = p.split("\n");
+    final = [];
+    for (i = 0; i < temp.length; i++) {
+        temp2 = temp[i].split(" ");
+        for (j = 0; j < temp2.length; j++) {
+            final.push(clean(temp2[j]));
+        }
+    }
+    return final;
+}
+
 function color() {
-    word2 = "happy";
+    word2 = document.getElementById("word_input").value;
+    console.log("test12345");
+    compare_to_original = document.getElementById("compare_to_original").checked;
+    console.log(compare_to_original);
+    use_comparator_at_all = document.getElementById("use_comparator").checked;
+
     all_words = [];
     for (i = 0; i < words.length; i++) {
         for (j = 0; j < words[i].length; j++) {
             all_words.push(clean(words[i][j][0]));
         }
     }
-    d = {
-        "all_words": all_words,
-        "comparator": word2
-    }
-    socket.emit("request", d, (err, msg) => {
-        if (err) {
-            console.log(err);
+    if (compare_to_original) {
+        correct_seq = correct_sequence(poems[poem_number]);
+        console.log(poems[poem_number])
+        console.log(correct_seq)
+        d = {
+            "all_words": all_words,
+            "correct_sequence": correct_seq,
+            "comparator": word2,
+            "use_comparator": use_comparator_at_all
         }
-        console.log(msg);
-    });
+        socket.emit("use_all_request", d, (err, msg) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(msg);
+        })
+    } else {
+        d = {
+            "all_words": all_words,
+            "comparator": word2
+        }
+        socket.emit("request", d, (err, msg) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(msg);
+        });
+    }
 }
 
 
@@ -214,7 +279,9 @@ function word_clicked(word_id) {
     }
 }
 
-const poem = `When, in disgrace with fortune and men’s eyes,
+
+
+const poems = [`When, in disgrace with fortune and men’s eyes,
 I all alone beweep my outcast state,
 And trouble deaf heaven with my bootless cries,
 And look upon myself and curse my fate,
@@ -227,7 +294,7 @@ Haply I think on thee, and then my state,
 (Like to the lark at break of day arising
 From sullen earth) sings hymns at heaven’s gate;
 For thy sweet love remembered such wealth brings
-That then I scorn to change my state with kings.`
+That then I scorn to change my state with kings.`]
 
 const cmudict_url = "https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict"
 var cmudict = {};
@@ -287,3 +354,4 @@ function count_syllables(word) {
         return c;
     }
 }
+

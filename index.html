@@ -15,6 +15,10 @@
             console.log("askdjfaslkdfjalskdjfasdf");
             recolor_words(res);
         });
+        socket.on("use_all_response", function(res) {
+            console.log("use_all_response received");
+            recolor_words(res);
+        });
         socket.on("test123", function(msg) {
             console.log(msg);
         });
@@ -27,11 +31,25 @@
                 <!--<button class="word" onclick="test()">hi</button>-->
             </div>
         </div>
-        <button id="start" onclick="vomit_words()">
-            click me!
-        </button>
-        <button id="color" onclick="color()">
-            color
-        </button>
+        <div id="bottom_bar">
+            <div id="button_holder">
+                <button id="start" class="bottom_button" onclick="vomit_words()">
+                    New Poem
+                </button>
+                <input id="word_input" placeholder="Comparator"></input>
+
+                <input type="checkbox" id="use_comparator" class="cbox">
+                <label id="use_comparator_label" for="use_comparator" class="cbox_label">Ignore Comparator</label>
+                <input type="checkbox" id="compare_to_original" class="cbox">
+                <label id="checkbox_label" for="compare_to_original" class="cbox_label">Compare to Original Poem</label>
+                <button id="color" class="bottom_button" onclick="color()">
+                    Recolor
+                </button>
+                <input type="checkbox" id="scale_values" class="cbox">
+                
+                <label id="scale_values_label" for="scale_values" class="cbox_label">Scale Colors</label>
+                
+            </div>
+        </div>
     </body>
 </html>
