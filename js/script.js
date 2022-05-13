@@ -294,7 +294,8 @@ Haply I think on thee, and then my state,
 (Like to the lark at break of day arising
 From sullen earth) sings hymns at heaven’s gate;
 For thy sweet love remembered such wealth brings
-That then I scorn to change my state with kings.`]
+That then I scorn to change my state with kings.`, 
+`Test poem here.`]
 
 const cmudict_url = "https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict"
 var cmudict = {};
